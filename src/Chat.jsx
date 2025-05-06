@@ -11,21 +11,21 @@ const Chat = ({ logOut, isLoading, session }) => {
 
   useEffect(() => {
     const fetchMessages = async () => {
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .order("created_at", { ascending: true });
-      if (error) {
-        throw new Error(error.message);
+      try {
+        const { data, error } = await supabase
+          .from("messages")
+          .select("*")
+          .order("created_at", { ascending: true });
+        if (error) {
+          throw new Error(error.message);
+        }
+        setMessages(data);
+      } catch (error) {
+        console.log(error);
+        toast.error("Error getting messages");
       }
-      setMessages(data);
     };
-    try {
-      fetchMessages();
-    } catch (error) {
-      console.log(error);
-      toast.error("Error getting messages");
-    }
+    fetchMessages();
   }, []);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const Chat = ({ logOut, isLoading, session }) => {
           schema: "public",
           table: "messages",
         },
-        (payload) => setMessages(payload.new)
+        (payload) => setMessages((prev) => [...prev, payload.new])
       )
       .subscribe();
 
@@ -52,6 +52,7 @@ const Chat = ({ logOut, isLoading, session }) => {
     try {
       if (!message) {
         toast.error("Enter a message first");
+        return;
       }
       const { error } = await supabase.from("messages").insert([
         {
@@ -90,11 +91,12 @@ const Chat = ({ logOut, isLoading, session }) => {
                   ? "items-end"
                   : "items-start"
               }`}
+              key={item?.id || `${item?.user_id}-${item?.created_at}`}
             >
               <div className="flex justify-center items-center gap-x-4">
-                <div className="flex flex-col gap-x-1" key={item?.user_id}>
+                <div className="flex flex-col gap-x-1">
                   <p className="text-[10px] text-slate-400 text-end">
-                    nilavtalukdar9@gmail.com
+                    {item?.email || "Unknown"}
                   </p>
                   <p className="text-sm font-medium bg-gray-200 p-2 mt-0.5 rounded">
                     {item.message}
