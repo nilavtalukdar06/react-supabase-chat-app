@@ -28,6 +28,25 @@ const Chat = ({ logOut, isLoading, session }) => {
     }
   }, []);
 
+  useEffect(() => {
+    const channel = supabase.channel("realtime:messages");
+    channel
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+        },
+        (payload) => setMessage(payload.new)
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, []);
+
   const sendMessage = async (e) => {
     e.preventDefault();
     try {
