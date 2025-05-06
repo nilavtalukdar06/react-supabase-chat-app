@@ -9,6 +9,7 @@ import { Trash } from "lucide-react";
 const Chat = ({ logOut, isLoading, session }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  console.log(session?.user);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -70,6 +71,8 @@ const Chat = ({ logOut, isLoading, session }) => {
       const { error } = await supabase.from("messages").insert([
         {
           message: message,
+          full_name: session?.user?.user_metadata?.full_name || "guest",
+          avatar_url: session?.user?.user_metadata?.avatar_url || "",
         },
       ]);
       if (error) {
@@ -116,10 +119,20 @@ const Chat = ({ logOut, isLoading, session }) => {
               }`}
               key={item?.id || `${item?.user_id}-${item?.created_at}`}
             >
-              <div className="flex justify-center items-center gap-x-4">
+              <div className="flex justify-center items-center gap-x-2">
+                {item?.user_id !== session?.user?.id && (
+                  <div className="flex justify-center items-center">
+                    <img
+                      src={item?.avatar_url}
+                      height={30}
+                      width={30}
+                      className="object-contain rounded-full"
+                    />
+                  </div>
+                )}
                 <div className="flex flex-col gap-x-1">
                   <p className="text-[10px] text-slate-400 text-end">
-                    {item?.email || "Unknown"}
+                    {item?.full_name}
                   </p>
                   <div className="flex gap-x-2 items-center justify-center">
                     {item?.user_id === session?.user?.id && (
@@ -136,14 +149,17 @@ const Chat = ({ logOut, isLoading, session }) => {
                     </p>
                   </div>
                 </div>
-                <div className="flex justify-center items-center">
-                  <img
-                    src="/react.svg"
-                    height={30}
-                    width={30}
-                    className="object-contain"
-                  />
-                </div>
+
+                {item?.user_id === session?.user?.id && (
+                  <div className="flex justify-center items-center">
+                    <img
+                      src={item?.avatar_url}
+                      height={30}
+                      width={30}
+                      className="object-contain rounded-full"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ))}
