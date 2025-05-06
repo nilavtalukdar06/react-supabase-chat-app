@@ -72,7 +72,7 @@ const App = () => {
       </section>
     );
   } else {
-    return <Chat logOut={logOut} />;
+    return <Chat logOut={logOut} isLoading={isLoading} session={session} />;
   }
 };
 
