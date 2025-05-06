@@ -4,6 +4,7 @@ import { Input } from "./components/ui/input";
 import { ClipLoader } from "react-spinners";
 import toast from "react-hot-toast";
 import supabase from "./supabase/supabase";
+import { Trash } from "lucide-react";
 
 const Chat = ({ logOut, isLoading, session }) => {
   const [message, setMessage] = useState("");
@@ -40,6 +41,18 @@ const Chat = ({ logOut, isLoading, session }) => {
         },
         (payload) => setMessages((prev) => [...prev, payload.new])
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "messages",
+        },
+        (payload) =>
+          setMessages((prev) =>
+            prev.filter((item) => item.id !== payload.old.id)
+          )
+      )
       .subscribe();
 
     return () => {
@@ -69,6 +82,16 @@ const Chat = ({ logOut, isLoading, session }) => {
     }
   };
 
+  const deleteMessage = async (id) => {
+    try {
+      const { error } = await supabase.from("messages").delete().eq("id", id);
+      if (error) throw new Error(error.message);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete message");
+    }
+  };
+
   return (
     <section className="h-full p-4 relative sm:p-10">
       <article className="max-w-2xl mx-auto my-5 border flex flex-col rounded-lg border-slate-200 shadow-sm">
@@ -83,7 +106,7 @@ const Chat = ({ logOut, isLoading, session }) => {
             </Button>
           </div>
         </div>
-        <div className="p-6 h-[450px]">
+        <div className="p-6 h-[450px] overflow-y-auto space-y-4">
           {messages.map((item) => (
             <div
               className={`flex flex-col gap-6 overflow-auto ${
@@ -98,9 +121,20 @@ const Chat = ({ logOut, isLoading, session }) => {
                   <p className="text-[10px] text-slate-400 text-end">
                     {item?.email || "Unknown"}
                   </p>
-                  <p className="text-sm font-medium bg-gray-200 p-2 mt-0.5 rounded">
-                    {item.message}
-                  </p>
+                  <div className="flex gap-x-2 items-center justify-center">
+                    {item?.user_id === session?.user?.id && (
+                      <button
+                        className="p-1 hover:bg-gray-100 transition-colors ease-in-out duration-200 rounded cursor-pointer"
+                        onClick={() => deleteMessage(item.id)}
+                      >
+                        <Trash color="red" size={15} />
+                      </button>
+                    )}
+
+                    <p className="text-sm font-medium bg-gray-200 p-2 mt-0.5 rounded">
+                      {item.message}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex justify-center items-center">
                   <img
