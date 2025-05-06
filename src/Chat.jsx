@@ -9,6 +9,7 @@ import { Trash } from "lucide-react";
 const Chat = ({ logOut, isLoading, session }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   console.log(session?.user);
 
   useEffect(() => {
@@ -68,6 +69,7 @@ const Chat = ({ logOut, isLoading, session }) => {
         toast.error("Enter a message first");
         return;
       }
+      setIsSubmitting(true);
       const { error } = await supabase.from("messages").insert([
         {
           message: message,
@@ -82,6 +84,8 @@ const Chat = ({ logOut, isLoading, session }) => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to send the message");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -174,9 +178,10 @@ const Chat = ({ logOut, isLoading, session }) => {
             onChange={(e) => setMessage(e.target.value)}
             value={message}
             required={true}
+            disabled={isSubmitting}
           />
-          <Button variant={"outline"} type={"submit"}>
-            Send 👋
+          <Button variant={"outline"} type={"submit"} disabled={isSubmitting}>
+            {isSubmitting ? <ClipLoader size={10} color="red" /> : "Send 👋"}
           </Button>
         </form>
       </article>
