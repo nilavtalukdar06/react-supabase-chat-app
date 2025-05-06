@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { ClipLoader } from "react-spinners";
@@ -7,6 +7,26 @@ import supabase from "./supabase/supabase";
 
 const Chat = ({ logOut, isLoading, session }) => {
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .order("created_at", { ascending: true });
+      if (error) {
+        throw new Error(error.message);
+      }
+      setMessages(data);
+    };
+    try {
+      fetchMessages();
+    } catch (error) {
+      console.log(error);
+      toast.error("Error getting messages");
+    }
+  }, []);
 
   const sendMessage = async (e) => {
     e.preventDefault();
