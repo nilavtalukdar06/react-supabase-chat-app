@@ -1,12 +1,78 @@
-# React + Vite
+# React Supabase Chat App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A real-time chat application built with React, Vite, Supabase, and Tailwind CSS. Users can authenticate with Google and chat instantly in a shared room, leveraging Supabase's real-time features.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔒 Google OAuth authentication (via Supabase)
+- 💬 Real-time group chat (Supabase Realtime Channels)
+- 🎨 Modern UI with Tailwind CSS and shadcn/ui components
+- ⚡ Fast development with Vite
+- 🧑‍💻 React 19, hooks-based architecture <!-- Replace with actual screenshot if available -->
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+
+- Node.js (v18+ recommended)
+- Supabase project (free tier is sufficient)
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/react-supabase-chat-app.git
+cd react-supabase-chat-app
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file in the root directory and add your Supabase credentials:
+
+```
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+You can find these in your [Supabase project settings](https://app.supabase.com/).
+
+### 4. Start the development server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) to view the app.
+
+## Project Structure
+
+- `src/App.jsx` – Handles authentication and main app logic
+- `src/Chat.jsx` – Real-time chat UI and logic
+- `src/supabase/supabase.js` – Supabase client setup
+- `src/components/ui/` – Reusable UI components (Button, Input, Avatar)
+- `src/lib/utils.js` – Utility functions
+- `src/index.css` – Tailwind CSS and custom styles
+
+## Customization
+
+- Update the chat room name in `src/Chat.jsx` if you want multiple rooms.
+- Style the UI further using Tailwind or shadcn/ui components.
+
+## Deployment
+
+To build for production:
+
+```bash
+npm run build
+```
+
+Then deploy the `dist` folder to your preferred static hosting (Vercel, Netlify, etc).
+
+## License
+
+MIT

@@ -1,52 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { ClipLoader } from "react-spinners";
-import supabase from "./supabase/supabase";
 
 const Chat = ({ logOut, isLoading, session }) => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const channelRef = useRef(null);
-
-  useEffect(() => {
-    const room = supabase.channel("room-1", {
-      config: {
-        broadcast: {
-          self: true,
-        },
-      },
-    });
-    channelRef.current = room;
-    room
-      .on("broadcast", { event: "text" }, ({ payload }) => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            message: payload?.message,
-            user: payload?.user,
-          },
-        ]);
-      })
-      .subscribe();
-    return () => {
-      room.unsubscribe();
-    };
-  }, []);
-
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!channelRef.current) return;
-    await channelRef.current.send({
-      type: "broadcast",
-      event: "text",
-      payload: {
-        message: message,
-        user: session?.user,
-      },
-    });
-    setMessage("");
-  };
 
   return (
     <section className="h-full p-4 relative sm:p-10">
@@ -62,29 +20,8 @@ const Chat = ({ logOut, isLoading, session }) => {
             </Button>
           </div>
         </div>
-        <div className="p-4 flex flex-col gap-6 overflow-auto h-[450px]">
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex ${
-                session?.user?.id === msg.user?.id
-                  ? "items-end justify-end"
-                  : "items-start justify-start"
-              } flex-col gap-y-1`}
-            >
-              <span className="text-xs text-gray-400">
-                {msg.user?.email || "Guest"}
-              </span>
-              <span className="bg-slate-100 rounded px-2 py-1">
-                {msg.message}
-              </span>
-            </div>
-          ))}
-        </div>
-        <form
-          className="border-t border-slate-200 p-4 w-full flex justify-center items-center gap-4"
-          onSubmit={(e) => sendMessage(e)}
-        >
+        <div className="p-4 flex flex-col gap-6 overflow-auto h-[450px]"></div>
+        <form className="border-t border-slate-200 p-4 w-full flex justify-center items-center gap-4">
           <Input
             placeholder="Type a message..."
             className="w-full"
