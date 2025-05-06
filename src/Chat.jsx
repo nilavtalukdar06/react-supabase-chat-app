@@ -2,9 +2,32 @@ import { useState } from "react";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { ClipLoader } from "react-spinners";
+import toast from "react-hot-toast";
+import supabase from "./supabase/supabase";
 
 const Chat = ({ logOut, isLoading, session }) => {
   const [message, setMessage] = useState("");
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    try {
+      if (!message) {
+        toast.error("Enter a message first");
+      }
+      const { error } = await supabase.from("messages").insert([
+        {
+          message: message,
+        },
+      ]);
+      if (error) {
+        throw new Error(error.message);
+      }
+      setMessage("");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send the message");
+    }
+  };
 
   return (
     <section className="h-full p-4 relative sm:p-10">
@@ -21,7 +44,10 @@ const Chat = ({ logOut, isLoading, session }) => {
           </div>
         </div>
         <div className="p-4 flex flex-col gap-6 overflow-auto h-[450px]"></div>
-        <form className="border-t border-slate-200 p-4 w-full flex justify-center items-center gap-4">
+        <form
+          className="border-t border-slate-200 p-4 w-full flex justify-center items-center gap-4"
+          onSubmit={(e) => sendMessage(e)}
+        >
           <Input
             placeholder="Type a message..."
             className="w-full"
