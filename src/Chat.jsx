@@ -4,6 +4,7 @@ import { Input } from "./components/ui/input";
 
 const Chat = ({ logOut }) => {
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -32,6 +33,8 @@ const Chat = ({ logOut }) => {
             className="w-full rounded"
             onChange={(e) => setMessage(e.target.value)}
             value={message}
+            required={true}
+            disabled={isSubmitting}
           />
           <Button variant={"outline"} type={"submit"}>
             Send 👋
