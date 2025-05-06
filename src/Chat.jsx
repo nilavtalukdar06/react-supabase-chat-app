@@ -38,7 +38,7 @@ const Chat = ({ logOut, isLoading, session }) => {
           schema: "public",
           table: "messages",
         },
-        (payload) => setMessage(payload.new)
+        (payload) => setMessages(payload.new)
       )
       .subscribe();
 
@@ -82,7 +82,36 @@ const Chat = ({ logOut, isLoading, session }) => {
             </Button>
           </div>
         </div>
-        <div className="p-4 flex flex-col gap-6 overflow-auto h-[450px]"></div>
+        <div className="p-6 h-[450px]">
+          {messages.map((item) => (
+            <div
+              className={`flex flex-col gap-6 overflow-auto ${
+                item?.user_id === session?.user?.id
+                  ? "items-end"
+                  : "items-start"
+              }`}
+            >
+              <div className="flex justify-center items-center gap-x-4">
+                <div className="flex flex-col gap-x-1" key={item?.user_id}>
+                  <p className="text-[10px] text-slate-400 text-end">
+                    nilavtalukdar9@gmail.com
+                  </p>
+                  <p className="text-sm font-medium bg-gray-200 p-2 mt-0.5 rounded">
+                    {item.message}
+                  </p>
+                </div>
+                <div className="flex justify-center items-center">
+                  <img
+                    src="/react.svg"
+                    height={30}
+                    width={30}
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
         <form
           className="border-t border-slate-200 p-4 w-full flex justify-center items-center gap-4"
           onSubmit={(e) => sendMessage(e)}
