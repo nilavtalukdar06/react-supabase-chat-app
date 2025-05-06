@@ -3,6 +3,7 @@ import supabase from "./supabase/supabase";
 import { Button } from "./components/ui/button";
 import toast from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
+import Chat from "./Chat";
 
 const App = () => {
   const [session, setSession] = useState(null);
@@ -71,13 +72,7 @@ const App = () => {
       </section>
     );
   } else {
-    return (
-      <section>
-        <Button onClick={logOut}>
-          {isLoading ? <ClipLoader size={10} color="#72e3ad" /> : "Logout"}
-        </Button>
-      </section>
-    );
+    return <Chat logOut={logOut} />;
   }
 };
 
