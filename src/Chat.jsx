@@ -104,6 +104,7 @@ const Chat = ({ logOut, isLoading, session }) => {
       <article className="max-w-2xl mx-auto my-5 border flex flex-col rounded-lg border-slate-200 shadow-sm">
         <div className="w-full flex justify-between p-4 items-center border-b">
           <div className="text-sm text-gray-500 tracking-wide">
+            <p>{session?.user?.user_metadata?.full_name || "Guest"}</p>
             <p className="text-red-500">{session?.user?.email || "Guest"}</p>
           </div>
           <div>
